@@ -34,7 +34,7 @@
       padding-top: clamp(72px, 10vh, 120px);      
     }      
 
-/* CABECERA TRANSL0‰3CIDA */      
+/* CABECERA TRANSLÚCIDA */      
 .glass-header {      
   --mx: 50%;      
   --my: 50%;      
@@ -151,12 +151,14 @@ footer::before {
 footer.is-hot::before { opacity: 1; }      
   </style>      
 </head>      
-<body>      
-  <!-- CABECERA -->      
-  <header class="glass-header" id="cabecera">      
-    <div class="brand">Oracle System</div>      
-    <div class="title">Podcast</div>      
-  </header>      
+<body>    
+  <!-- CABECERA -->    
+  <header class="glass-header" id="cabecera" aria-label="Cabecera translúcida con luz reactiva">    
+    <div class="brand">Oracle System</div>    
+    <div class="spacer"></div>    
+    <nav class="nav" aria-label="Navegación"></nav>    
+    <div class="title">MAIN MENU</div>    
+  </header>    
 
   <!-- CONTENIDO CON VIDEOS -->      
   <main>      
