@@ -189,7 +189,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 32px;
+      padding: 100px;
     }
 
     .videos-container {
@@ -259,6 +259,58 @@
     }
     footer.is-hot::before { opacity: 1; }
 
+
+/* ==========================================
+   INDICADOR DE NOVEDAD — SOLO YOUTUBE
+   ========================================== */
+
+.iframe-youtube-contenedor {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+/* El iframe ocupa exactamente el contenedor */
+.iframe-youtube-contenedor iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+/* Punto */
+.iframe-youtube-contenedor .punto-novedad {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+
+  z-index: 100;
+
+  pointer-events: none;
+
+  box-shadow:
+    0 0 6px rgba(255,255,255,.8),
+    0 0 12px currentColor;
+
+  animation: puntoNovedad 1.5s ease-in-out infinite;
+}
+
+@keyframes puntoNovedad {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.35);
+    opacity: .65;
+  }
+}
   </style>
 </head>
 <body>
@@ -280,7 +332,7 @@
   <main>
     <div class="videos-container">
 
-      <iframe loading="lazy"  src="https://www.youtube.com/embed/mssUR5xBnz0" allowfullscreen></iframe>
+      <iframe loading="lazy"  src="https://www.youtube.com/embed/mssUR5xBnz0" title="Eclipse 2026 MD" allowfullscreen></iframe>
       <iframe loading="lazy"  src="https://www.youtube.com/embed/L6cK8uvp2uA" allowfullscreen></iframe>
       <iframe loading="lazy"  src="https://www.youtube.com/embed/_ATIH2z98Ho" allowfullscreen></iframe>
       <iframe id="jKS6Sko" loading="lazy"  src="https://www.youtube.com/embed/D-jKS6Sko-g" allowfullscreen></iframe>
@@ -380,5 +432,169 @@
       });
     });
   </script>
+  
+  
+  <script>
+/*
+==================================================
+   🔴🟢🔵INDICADOR DE NOVEDAD
+==================================================
+*/
+
+
+marcarYouTube("Eclipse 2026 MD", "#ff0000", "12/09/2026");
+
+
+/*
+==================================================
+   FUNCIÓN
+==================================================
+*/
+
+function marcarYouTube(tituloBuscado, color, fechaCaducidad) {
+
+    /* ==========================================
+       COMPROBAR FECHA
+       ========================================== */
+
+    if (fechaCaducidad) {
+
+        const partes = fechaCaducidad.split("/");
+
+        if (partes.length !== 3) {
+            console.error(
+                "Fecha incorrecta. Usa DD/MM/AAAA"
+            );
+            return;
+        }
+
+        const dia = Number(partes[0]);
+        const mes = Number(partes[1]) - 1;
+        const año = Number(partes[2]);
+
+        /*
+         * Caduca al comenzar el día siguiente
+         */
+        const caducidad = new Date(
+            año,
+            mes,
+            dia + 1,
+            0,
+            0,
+            0,
+            0
+        );
+
+        if (new Date() >= caducidad) {
+            return;
+        }
+    }
+
+
+    /* ==========================================
+       BUSCAR EXCLUSIVAMENTE YOUTUBE
+       ========================================== */
+
+    const iframes = document.querySelectorAll(
+        'iframe[src*="youtube.com/embed/"]'
+    );
+
+
+    /* ==========================================
+       RECORRER IFRAMES
+       ========================================== */
+
+    iframes.forEach(iframe => {
+
+        const titulo =
+            (iframe.getAttribute("title") || "").trim();
+
+
+        /*
+        * Si no tiene title, ignorarlo.
+        */
+        if (!titulo) {
+            return;
+        }
+
+
+        /*
+        * Comparación sin distinguir mayúsculas
+        */
+        if (
+            titulo.toLowerCase() !==
+            tituloBuscado.trim().toLowerCase()
+        ) {
+            return;
+        }
+
+
+        /* ======================================
+           EVITAR DUPLICADOS
+           ====================================== */
+
+        if (
+            iframe.parentElement &&
+            iframe.parentElement.classList.contains(
+                "iframe-youtube-contenedor"
+            )
+        ) {
+            return;
+        }
+
+
+        /* ======================================
+           CREAR CONTENEDOR
+           ====================================== */
+
+        const contenedor =
+            document.createElement("div");
+
+        contenedor.className =
+            "iframe-youtube-contenedor";
+
+
+
+        iframe.parentNode.insertBefore(
+            contenedor,
+            iframe
+        );
+
+
+        contenedor.appendChild(iframe);
+
+
+        /* ======================================
+           CREAR PUNTO
+           ====================================== */
+
+        const punto =
+            document.createElement("span");
+
+        punto.className =
+            "punto-novedad";
+
+
+        /*
+        * Color del punto
+        */
+
+        punto.style.backgroundColor = color;
+
+
+
+        punto.style.color = color;
+
+
+        /*
+        * Añadir punto
+        */
+
+        contenedor.appendChild(punto);
+
+    });
+
+}
+</script>
 </body>
 </html>
